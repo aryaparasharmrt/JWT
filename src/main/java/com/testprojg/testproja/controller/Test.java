@@ -8,22 +8,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("")
 public class Test {
 
-    private final TestRepository testRepository;
+//    private final TestRepository testRepository;
+//
+//    @Autowired
+//    TestService testService;
+//
+//
+//    @Autowired
+//    RedisPlaygroundService redisService;
+//
+//    public Test(TestRepository testRepository) {
+//        this.testRepository = testRepository;
+//    }
+     private final TestRepository testRepository;
+    private final TestService testService;
+    private final RedisPlaygroundService redisService;
 
-    @Autowired
-    TestService testService;
-
-
-    @Autowired
-    RedisPlaygroundService redisService;
-
-    public Test(TestRepository testRepository) {
+    public Test(
+            TestRepository testRepository,
+            TestService testService,
+            RedisPlaygroundService redisService
+    ) {
         this.testRepository = testRepository;
+        this.testService = testService;
+        this.redisService = redisService;
     }
 
     @GetMapping("/m1")
@@ -47,7 +61,8 @@ public class Test {
     }
 
     @GetMapping("/get-person")
-    public Person getPerson(@RequestParam Long id) {
+    public Optional<Person> getPerson(@RequestParam Long id) {
+        System.out.println("get person by id");
         return testService.getPersonById(id);
     }
 

@@ -31,12 +31,13 @@ public class AuthController {
                                 request.getUsername(), request.getPassword()
                         )
                 );
-        System.out.println("Line2 -> " + "Name: " + request.getUsername() + "Pass: " + request.getPassword());
+        System.out.println("Line -> " + "Name: " + request.getUsername() + "Pass: " + request.getPassword());
 
         UserDetails user = (UserDetails) authentication.getPrincipal();
 
         String jwt = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefereshToken(user);
         System.out.println("Logged in Successfully");
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        return ResponseEntity.ok(new JwtResponse(jwt, refreshToken));
     }
 }

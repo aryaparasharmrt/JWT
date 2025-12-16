@@ -21,9 +21,9 @@ public class TestService {
 
     // -------------------- GET BY ID (cached) --------------------
     @Cacheable(value = "personCache", key = "#id")
-    public Person getPersonById(Long id) {
+    public Optional<Person> getPersonById(Long id) {
         System.out.println("Fetching Person from DB by ID...");
-        return testRepository.findById(id).orElse(null);
+        return testRepository.findById(id);
     }
 
     // -------------------- GET BY NAME (cached separately) --------------------
@@ -56,7 +56,6 @@ public class TestService {
     public void deletePerson(Long id, String name) {
 
         System.out.println("Deleting Person from DB & Cache...");
-
         Person p = testRepository.findById(id).orElse(null);
 
         if (p != null) {

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -43,27 +45,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         String token = authHeader.substring(7);
         System.out.println(">>> Token extracted: "+ token);
         String username = jwtService.extractUsername(token);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try{
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails user = userDetailsService.loadUserByUsername(username);
+                UserDetails user = userDetailsService.loadUserByUsername(username);
 
-            if (jwtService.isTokenValid(token, user)) {
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                user, null, user.getAuthorities());
-
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                if (jwtService.isTokenValid(token, user)) {
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    user, null, user.getAuthorities());
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    System.out.println("Auth Contains: " + auth);
+                    System.out.println("Principal: " + auth.getPrincipal().toString());
+//                    System.out.println("Principal Credentials: " + auth.getCredentials().toString());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
+                    String refereshToken = request.getHeader("RefereshToken");
+                    String reftoken = refereshToken.substring(7);
+                    if(reftoken != null) {
+                        if(jwtService.isTokenValid(reftoken, user)) {
+                            UsernamePasswordAuthenticationToken auth =
+                                    new UsernamePasswordAuthenticationToken(
+                                            user, null, user.getAuthorities());
+                            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                    System.out.println("Principal Credentials: " + auth.getCredentials().toString());
+                            SecurityContextHolder.getContext().setAuthentication(auth);
+                        }
+                    }
+                }
             }
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            Logger.getLogger("Got Exception: " + e);
+            e.printStackTrace();
         }
-
-        filterChain.doFilter(request, response);
     }
 }
 

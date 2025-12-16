@@ -4,7 +4,7 @@ import com.testprojg.testproja.Service.TestService;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestServiceTest {
+public class git TestServiceTest {
     private final TestService testService = new TestService();
 
     @Test
