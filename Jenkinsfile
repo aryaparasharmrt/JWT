@@ -14,12 +14,6 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/aryaparasharmrt/JWT.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 sh 'mvn clean compile'
@@ -45,4 +39,3 @@ pipeline {
         }
     }
 }
-us
